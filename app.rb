@@ -5,7 +5,9 @@ require 'sinatra/reloader'
 require_relative 'model.rb'
 
 get ('/') do
+    hej()
     slim(:"home")
+
 end
 
 get ('/books') do
@@ -18,6 +20,27 @@ get ('/book/new') do
     slim(:"book/new")
 end
 
+get ('/place/new') do
+    slim(:"place/new")
+end
+
+post ('/places') do
+    book_num = params[:book]
+
+    book_id = bookId(book_num)
+    places = params[:places]
+    places = places.split("\n")
+    # p "_____________________"
+    places.map! {|place| place.chomp}
+    # p places
+    # p "_____________________"
+    
+    places.each do |place|
+        addPlace(place,book_id)
+    end
+    redirect("/")
+end
+
 post ('/books') do
     title =  params[:title]
     number =  params[:number]
@@ -26,14 +49,12 @@ post ('/books') do
     piratShipSunk = params[:pirats]
     boar = params[:boar]
     menhirs = params[:stone]
-    
+    place = params[:place]
 
     db = db_loder()
-
-    # get book and place id
     book_id =db.execute('SELECT id FROM book').last
     book_id = book_id["id"]
-    add
+
 
 
 
