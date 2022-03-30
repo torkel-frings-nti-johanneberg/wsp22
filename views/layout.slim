@@ -4,10 +4,17 @@ html lang="en"
         meta charset="UTF-8"/
         meta http-equiv="X-UA-Compatible" content="IE=edge"/
         meta name="viewport" content="width=device-width, initial-scale=1.0"/
-        link rel="stylesheet" href="css/style.css"/
+        link rel="stylesheet" href="Css/style.css"/
 
         title Asterix & Oblekix Data scroll
     body 
         nav
             a href="/books" the amazing comics
+            a href="/" home
+            -if session[:id]
+                a href="/logout" logout
+            -else
+                a href="/login" login
+                a href="/register" register
+            
         ==yield

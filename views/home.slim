@@ -1,3 +1,7 @@
-a href="/book/new" add book
 
-a href="/place/new" add place to book
+- if session[:rool] == "reader"
+    p welkom
+- else 
+    - privliges(session[:rool]).each do |x|
+        == "#{x}"
+

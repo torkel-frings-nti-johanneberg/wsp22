@@ -2,17 +2,23 @@ require 'sinatra'
 require 'slim'
 require 'sqlite3'
 require 'sinatra/reloader'
+require "bcrypt"
 require_relative 'model.rb'
 
-get ('/') do
+enable :sessions
+
+get('/') do 
+    session[:rool] = "reader"
+    redirect('/home')
+end
+
+get('/home') do
     hej()
     slim(:"home")
-
 end
 
 get ('/books') do
-    db = db_loder()
-    @booklist = db.execute("SELECT title,number FROM book")
+    getTittleNumberBooks()
     slim(:"book/index")
 end
 
@@ -24,21 +30,38 @@ get ('/place/new') do
     slim(:"place/new")
 end
 
+get ('/pepol/new') do
+    slim(:"pepol/new")
+end
+
 post ('/places') do
     book_num = params[:book]
 
     book_id = bookId(book_num)
     places = params[:places]
     places = places.split("\n")
-    # p "_____________________"
     places.map! {|place| place.chomp}
-    # p places
-    # p "_____________________"
-    
     places.each do |place|
         addPlace(place,book_id)
     end
-    redirect("/")
+    redirect("/home")
+end
+
+post ('/pepol') do
+    book_num = params[:book]
+
+    book_id = bookId(book_num)
+    pepol = params[:pepol]
+    pepol = pepol.split("\n")
+    # p "_____________________"
+    pepol.map! {|person| person.chomp}
+    # p places
+    # p "_____________________"
+    
+    pepol.each do |person|
+        addPerson(person,book_id)
+    end
+    redirect("/home")
 end
 
 post ('/books') do
@@ -51,34 +74,59 @@ post ('/books') do
     menhirs = params[:stone]
     place = params[:place]
 
+    addbooks(title, number, publiDate, posionsDrunk, piratShipSunk, boar, menhirs)
+end
+
+get("/login") do
+    slim(:"users/login")
+end
+
+get("/register") do
+    slim(:"users/regsister")
+end
+
+get("/logout") do
+    session.destroy
+    redirect('/')
+end
+  
+post("/login") do
+    username = params[:username]
+    password = params[:password]
     db = db_loder()
-    book_id =db.execute('SELECT id FROM book').last
-    book_id = book_id["id"]
-
-
-
-
-
-    # get artist_id
-    artists = db.execute("SELECT * FROM artist")
-    artists_id = 0
-    cunrentArtist = params[:artist]
-    artists.each do |artist|
-        if artist["name"] == cunrentArtist
-            artists_id = artist["id"]
-        end
+    result = db.execute("SELECT * FROM user WHERE name = ?",username).first
+    pwdigets = result["pasword"]
+    id = result["id"]
+    hej()
+    p result
+    hej()
+    if BCrypt::Password.new(pwdigets) == password
+        p id
+        session[:id] = id
+        session[:rool] = result["rool"]
+        p session[:rool]
+        p session[:id]
+        redirect('/home')
+    else
+        redirect to("/error")
     end
-    if artists_id == 0
+end
+  
+post("/users") do
+    username = params[:username]
+    password = params[:password]
+    password_confirm = params[:password_connfirm]
+    rool = "reader"
+    
+    if password == password_confirm
+        password_digest = BCrypt::Password.create(password_confirm)
+        db = db_loder()
+        
+        db.execute("INSERT INTO user (name, pasword,rool) VALUES(?,?,?)", username, password_digest, rool)
+        redirect("/home")
+    else
         redirect("/error")
-    end 
-
-    # add book info to db
-    db.execute("INSERT INTO book (title, number, publish_date,posions_drunk,pirat_ship_shunk,wild_boar,menhirs,artist_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", title, number, publiDate, posionsDrunk, piratShipSunk, boar, menhirs, artists_id)
-
-
-
-
-    redirect("/")
+    end
 end
 
 get ('/error') do
