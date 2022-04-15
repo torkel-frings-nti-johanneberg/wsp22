@@ -1,0 +1,8 @@
+
+displa booknumber range in add place/pepol dropdawn 
+diplay list of pepol and places in edit
+
+Display info about books
+
+macke posebilety to add pepol to placese ..... maby
+
