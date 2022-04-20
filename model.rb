@@ -174,6 +174,16 @@ def getBooksInfo()
   p @booklist
 end
 
+def getBookInfo(id)
+  db = db_loder()
+  @bookinfo = db.execute("SELECT * FROM book WHERE id=?",id)
+  artistName = db.execute("SELECT name FROM artist WHERE id = ?", @bookinfo[0]["artist_id"])
+  @bookinfo[0]["artist"] = artistName[0]["name"]
+  hej(5)
+  p @bookinfo
+  hej(2)
+end
+
 def hej(iterasion)
     for i in 0...iterasion do
       puts "\e[32m______________________________________________________\e[0m"
@@ -274,13 +284,68 @@ def getUserList()
   @userlist = db.execute('SELECT * FROM user')
   @userlist.each do |user|
     if user["rool"] != "admin"
-      allrouts << "<form action='/rool/#{user["id"]}/update' method='post'><label for=#{user["name"]}>Choose a rool for #{user["name"]}:</label><select id=#{user["id"]} name='rool' size='5' multiple><option value='reader'>reader</option><option value='writer'>writer</option><option value='editor'>editor</option><option value='promoter'>promoter</option><option value='moderator'>moderator</option></select><input type='submit'><br>"
+      allrouts << "<form action='/rool/#{user["id"]}/update' method='post'><label for=#{user["name"]}>Choose a rool for #{user["name"]}:</label><select id=#{user["id"]} name='rool' size='5' multiple><option value='reader'>reader</option><option value='writer'>writer</option><option value='editor'>editor</option><option value='promoter'>promoter</option><option value='moderator'>moderator</option></select><input type='submit'><br></form>"
     end
   end
+  hej(2)
+  puts allrouts
+  hej(2)
   return allrouts
 end
 
 def deletUser(user_id)
   db = db_loder()
   db.execute('DELETE FROM user WHERE id=?',user_id)
+end
+
+def register(username,password,password_confirm)
+  db = db_loder()
+  rool = "reader"
+  users = db.execute('SELECT * FROM user')
+
+  users.each do |user|
+    if username == user["name"]
+      redirect("/error")
+    end
+  end
+
+  if password == password_confirm
+      password_digest = BCrypt::Password.create(password_confirm)
+      db = db_loder()
+      
+      db.execute("INSERT INTO user (name, pasword,rool) VALUES(?,?,?)", username, password_digest, rool)
+      login(username,password)
+  else
+      redirect("/error")
+  end
+end
+
+
+def login(username,password)
+  db = db_loder()
+  result = db.execute("SELECT * FROM user WHERE name = ?",username).first
+  if result == nil
+      redirect to('/error')
+  end
+  pwdigets = result["pasword"]
+  id = result["id"]
+  hej(1)
+  p result
+  hej(1)
+  if BCrypt::Password.new(pwdigets) == password
+      p id
+      session[:id] = id
+      session[:rool] = result["rool"]
+      p session[:rool]
+      p session[:id]
+      redirect('/home')
+  else
+      redirect to("/error")
+  end
+end
+
+def numerOfBooks()
+  db = db_loder()
+  return db.execute('SELECT COUNT(*) FROM book')
+  
 end

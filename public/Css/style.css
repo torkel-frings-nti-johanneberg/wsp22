@@ -1,6 +1,7 @@
 *{
     margin: 0;
     padding: 0;
+    /* background-color: hotpink; */
 }
 
 nav{
@@ -11,4 +12,6 @@ nav{
 }
 a{
     display: block;
+    
+    text-decoration: none;
 }

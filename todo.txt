@@ -1,8 +1,10 @@
 
+Befor block för att säkra routs   ||
+
 displa booknumber range in add place/pepol dropdawn 
 diplay list of pepol and places in edit
 
-Display info about books
+katche not loged in error |
 
 macke posebilety to add pepol to placese ..... maby
 

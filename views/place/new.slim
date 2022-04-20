@@ -1,6 +1,8 @@
+- max = numerOfBooks()[0]["COUNT(*)"].to_s
+
 form action="/places" method="post" id="tmp"
     
-    input type="text" name="book"  placeholder="book_number" /
+    input type="number" name="book" min="0" max=max placeholder="book_number" /
     input type="submit" value="add"/
     
 textarea name="places" form="tmp" 

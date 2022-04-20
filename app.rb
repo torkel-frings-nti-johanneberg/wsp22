@@ -17,19 +17,19 @@ get('/home') do
     slim(:"home")
 end
 
-get ('/books') do
+get('/books') do
     getBooksInfo()
     slim(:"book/index")
 end
 
-get ('/book/new') do
+get('/book/new') do
     if rolllrvel() != nil
         redirect to("/home")
     end
     slim(:"book/new")
 end
 
-get '/book/edit' do
+get('/book/edit') do
     if rolllrvel() <= 1
         redirect to("/home")
     end
@@ -37,28 +37,34 @@ get '/book/edit' do
     slim(:"book/edit/index")
 end
 
-get '/books/:id/edit' do
-    if rolllrvel() < 1
+get('/books/:id/edit') do
+    p rolllrvel
+    hej(2)
+    if rolllrvel > 1
+        slim(:"book/edit/edit")
+    else
         redirect to("/home")
     end
-    slim(:"book/edit/edit")
+    
 end
 
-get ('/place/new') do
-    if rolllrvel() != nil
+get('/place/new') do
+    if rolllrvel == nil
         redirect to("/home")
+    else 
+        slim(:"place/new")
     end
-    slim(:"place/new")
 end
 
-get ('/pepol/new') do
-    if rolllrvel() != nil
+get('/pepol/new') do
+    if rolllrvel() == nil
         redirect to("/home")
+    else 
+        slim(:"pepol/new")
     end
-    slim(:"pepol/new")
 end
 
-post ('/places') do
+post('/places') do
     if rolllrvel() != nil
         redirect to("/home")
     end
@@ -74,7 +80,7 @@ post ('/places') do
     redirect("/home")
 end
 
-post ('/pepol') do
+post('/pepol') do
     if rolllrvel() != nil
         redirect to("/home")
     end
@@ -94,7 +100,7 @@ post ('/pepol') do
     redirect("/home")
 end
 
-post ('/books') do
+post('/books') do
     if rolllrvel() != nil
         redirect to("/home")
     end
@@ -127,51 +133,24 @@ end
 post("/login") do
     username = params[:username]
     password = params[:password]
-    db = db_loder()
-    result = db.execute("SELECT * FROM user WHERE name = ?",username).first
-    if result == nil
-        redirect to('/error')
-    end
-    pwdigets = result["pasword"]
-    id = result["id"]
-    hej(1)
-    p result
-    hej(1)
-    if BCrypt::Password.new(pwdigets) == password
-        p id
-        session[:id] = id
-        session[:rool] = result["rool"]
-        p session[:rool]
-        p session[:id]
-        redirect('/home')
-    else
-        redirect to("/error")
-    end
+
+    login(username,password)
+
 end
   
 post("/users") do
     username = params[:username]
     password = params[:password]
     password_confirm = params[:password_connfirm]
-    rool = "reader"
-    
-    if password == password_confirm
-        password_digest = BCrypt::Password.create(password_confirm)
-        db = db_loder()
-        
-        db.execute("INSERT INTO user (name, pasword,rool) VALUES(?,?,?)", username, password_digest, rool)
-        redirect("/home")
-    else
-        redirect("/error")
-    end
+    register(username,password,password_confirm)
 end
 
-get '/rool/update' do
+get('/rool/update') do
     @listOfreaders = getReaderList()
     slim(:"users/update")
 end
 
-get '/rool/:id/update' do
+get('/rool/:id/update') do
     if rolllrvel() <= 2
         redirect to("/home")
     end
@@ -179,9 +158,8 @@ get '/rool/:id/update' do
     promote(user_id)
 end
 
-get '/rool/edit' do
+get('/rool/edit') do
     @listOfreaders = getUserList()
-    hej(8)
     slim(:"users/update")
 end
 
@@ -191,8 +169,7 @@ post('/rool/:id/update') do
     moderate(id,rool)
 end
 
-get '/user/edit' do
-
+get('/user/edit') do
     slim(:"users/edit")
 end
 
@@ -218,6 +195,21 @@ post("/book/:id/edit") do
     id = params[:id]
 
     editbook(title, number, publiDate, posionsDrunk, piratShipSunk, boar, menhirs, artist, id)
+end
+
+get("/book/:id/show") do
+    getBooksInfo()
+    id = params[:id].to_i
+    @booklist.each do |book|
+        p"is #{book["id"]} = #{id}"
+        p book["id"]
+        p id
+        if book["id"] == id
+            p "in it"
+            getBookInfo(id)
+        end
+    end
+    slim(:"book/show") 
 end
 
 post("/pepol_in_book/:id/edit") do
