@@ -1,11 +1,24 @@
 require 'sinatra'
 require 'slim'
 require 'sqlite3'
-require 'sinatra/reloader'
+# require 'sinatra/reloader'
 require "bcrypt"
 require_relative 'model.rb'
 
 enable :sessions
+@notProtectedRoutes = ["/books","/","/home"]
+@level1 = ["/book/new","/places","/pepol" ]
+before do
+    if session[:rool] == nil
+        redirect to("/")
+    end
+    if @notProtected_routes.include?(request.path_info)
+       
+    else
+        rolllrvel = rolllrvel()
+
+    end
+end
 
 get('/') do 
     session[:rool] = "reader"
