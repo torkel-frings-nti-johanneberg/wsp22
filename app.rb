@@ -1,22 +1,16 @@
 require 'sinatra'
 require 'slim'
 require 'sqlite3'
-# require 'sinatra/reloader'
+require 'sinatra/reloader'
 require "bcrypt"
 require_relative 'model.rb'
 
 enable :sessions
-@notProtectedRoutes = ["/books","/","/home"]
-@level1 = ["/book/new","/places","/pepol" ]
-before do
-    if session[:rool] == nil
-        redirect to("/")
-    end
-    if @notProtected_routes.include?(request.path_info)
-       
-    else
-        rolllrvel = rolllrvel()
 
+before do 
+    if rolllrvel() == nil
+        session[:rool] = "reader"
+        p "__________________________"
     end
 end
 
@@ -36,14 +30,14 @@ get('/books') do
 end
 
 get('/book/new') do
-    if rolllrvel() != nil
+    if rolllrvel() == nil
         redirect to("/home")
     end
     slim(:"book/new")
 end
 
 get('/book/edit') do
-    if rolllrvel() <= 1
+    if rolllrvel() <= 0
         redirect to("/home")
     end
     editLinks()
@@ -62,7 +56,7 @@ get('/books/:id/edit') do
 end
 
 get('/place/new') do
-    if rolllrvel == nil
+    if rolllrvel() == nil
         redirect to("/home")
     else 
         slim(:"place/new")
@@ -78,7 +72,7 @@ get('/pepol/new') do
 end
 
 post('/places') do
-    if rolllrvel() != nil
+    if rolllrvel() == nil
         redirect to("/home")
     end
     book_num = params[:book]
@@ -94,7 +88,7 @@ post('/places') do
 end
 
 post('/pepol') do
-    if rolllrvel() != nil
+    if rolllrvel() == nil
         redirect to("/home")
     end
     book_num = params[:book]
@@ -104,8 +98,8 @@ post('/pepol') do
     pepol = pepol.split("\n")
     # p "_____________________"
     pepol.map! {|person| person.chomp}
-    # p places
-    # p "_____________________"
+    p pepol
+    p "_____________________"
     
     pepol.each do |person|
         addPerson(person,book_id)
@@ -114,7 +108,7 @@ post('/pepol') do
 end
 
 post('/books') do
-    if rolllrvel() != nil
+    if rolllrvel() == nil
         redirect to("/home")
     end
     title =  params[:title]
@@ -127,7 +121,7 @@ post('/books') do
     place = params[:place]
     artist = params[:artist]
 
-    addbooks(title, number, publiDate, posionsDrunk, piratShipSunk, boar, menhirs, artist)
+    addbook(title, number, publiDate, posionsDrunk, piratShipSunk, boar, menhirs, artist)
 end
 
 get("/login") do
@@ -164,7 +158,9 @@ get('/rool/update') do
 end
 
 get('/rool/:id/update') do
-    if rolllrvel() <= 2
+    hej(3)
+    puts rolllrvel()
+    if rolllrvel() <= 1
         redirect to("/home")
     end
     user_id = params[:id]
@@ -187,10 +183,14 @@ get('/user/edit') do
 end
 
 post('/user/:id/delete') do
+    if rolllrvel() != 4
+        redirect to("/home")
+    end
     user_id = params[:id]
     deletUser(user_id)
     redirect to("/home")
 end
+
 
 post("/book/:id/edit") do
     if rolllrvel() <= 1
@@ -214,9 +214,9 @@ get("/book/:id/show") do
     getBooksInfo()
     id = params[:id].to_i
     @booklist.each do |book|
-        p"is #{book["id"]} = #{id}"
-        p book["id"]
-        p id
+        # p"is #{book["id"]} = #{id}"
+        # p book["id"]
+        # p id
         if book["id"] == id
             p "in it"
             getBookInfo(id)

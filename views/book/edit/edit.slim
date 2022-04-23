@@ -1,5 +1,7 @@
-- getBooksInfo()
-- book = @booklist[params[:id].to_i-1]
+-getBookInfo(params[:id])
+- book = @bookinfo[0]
+- pepeol = @bookinfo[1].uniq
+- places = @bookinfo[2].uniq
 - hej(5)
 
 form action="/book/#{params[:id]}/edit" method="post" 
@@ -12,16 +14,23 @@ form action="/book/#{params[:id]}/edit" method="post"
     input type="number" name="stone" value="#{book["menhirs"]}" /
     input type="text" name="artist" value="#{book["artist"]}" /
 
-    input type="submit" value="cange book ingo"/
+    input type="submit" value="cange book info"/
 
 
-/ edits sker per book inte per person
-textarea name="pepolAdd" form="pepol" placeholder="add pepol"
+- p pepeol
+- p getName(pepeol)
+
+
+
+
+/ -puts pepeol
+
+textarea name="pepolAdd" form="pepol" placeholder="#{getName(pepeol)}"
 textarea name="pepolRemove" form="pepol" placeholder="diskard pepol"
 form action="/pepol_in_book/#{params[:id]}/edit" method="post" id="pepol"
     input type="submit" value="cange pepol in book"/
 
-textarea name="placeAdd" form="place" placeholder="add place"
+textarea name="placeAdd" form="place" placeholder="#{getName(places)}"
 textarea name="placeRemove" form="place" placeholder="diskard place"
 form action="/book_in_placese/#{params[:id]}/edit" method="post" id="place"
     input type="submit" value="cange places in book"/

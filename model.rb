@@ -176,12 +176,25 @@ end
 
 def getBookInfo(id)
   db = db_loder()
+
   @bookinfo = db.execute("SELECT * FROM book WHERE id=?",id)
   artistName = db.execute("SELECT name FROM artist WHERE id = ?", @bookinfo[0]["artist_id"])
   @bookinfo[0]["artist"] = artistName[0]["name"]
+  @bookinfo << db.execute("SELECT name FROM pepol_in_book INNER JOIN pepol ON pepol_in_book.pepol_id = pepol.id WHERE book_id = ?",id)
+  @bookinfo << db.execute("SELECT name FROM book_set_in_place INNER JOIN places ON book_set_in_place.palce_id = places.id WHERE book_id = ?",id)
+   
   hej(5)
+  # @bookinfo = @bookinfo.flatten.uniq
   p @bookinfo
   hej(2)
+end
+
+def getName(list)
+  niceList = ""
+  list.each do |element|
+    niceList << element["name"] + "\n"
+  end
+  return niceList
 end
 
 def hej(iterasion)
@@ -198,6 +211,9 @@ def db_loder()
 end
 
 def privliges(rool)
+  if rool == nil
+    redirect to("/")
+  end
   allrouts = [
     {level: 0, href: '<a href="/book/new"> add book</a>'},
     {level: 0, href: '<a href="/place/new"> add place to book</a>'},

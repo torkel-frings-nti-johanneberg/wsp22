@@ -7,3 +7,15 @@ p posions drunk: #{book["posions_drunk"]}
 p pirat ship shunk: #{book["pirat_ship_shunk"]}
 p menhirs: #{book["menhirs"]}
 p Artist: #{book["artist"]}
+br
+h5 charakters
+- pepol = @bookinfo[1].uniq
+- puts @bookinfo[1]
+- pepol.each do |person|
+    p #{person["name"]}
+
+br    
+h5 places
+- places = @bookinfo[2].uniq
+- places.each do |place|
+    p #{place["name"]}
