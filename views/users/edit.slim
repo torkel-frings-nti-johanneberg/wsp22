@@ -1,11 +1,9 @@
 
 - getUserList()
-- hej(8)
+
 - puts @userlist
 - @userlist.each do |user|
-    - hej(1)
-    - puts user
-    - puts user["id"]
+
     form action="/rool/#{user["id"]}/update" method="post" 
         input type="text" name="username" value="#{user["name"]}"
         input type="rool" name="rool" value="#{user["rool"]}"

@@ -2,7 +2,7 @@
 - book = @bookinfo[0]
 - pepeol = @bookinfo[1].uniq
 - places = @bookinfo[2].uniq
-- hej(5)
+
 
 form action="/book/#{params[:id]}/edit" method="post" 
     input type="text" name="title" value="#{book["title"]}"/ 
@@ -17,8 +17,7 @@ form action="/book/#{params[:id]}/edit" method="post"
     input type="submit" value="cange book info"/
 
 
-- p pepeol
-- p getName(pepeol)
+
 
 
 
