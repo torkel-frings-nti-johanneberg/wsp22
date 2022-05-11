@@ -15,7 +15,7 @@ before do
     end
 end
 
-# readirect from landingpage to home page and sett rool to reader
+# redirect from landingpage to home page and sett rool to reader
 #
 get('/') do 
     session[:rool] = "reader"
@@ -112,7 +112,9 @@ post('/places') do
     places = places.split("\n")
     places.map! {|place| place.chomp}
     places.each do |place|
-        addPlace(place,book_id)
+        if addPlace(place,book_id)
+            redirect("/error")
+        end
     end
     redirect("/home")
 end
@@ -139,7 +141,9 @@ post('/pepol') do
 
     
     pepol.each do |person|
-        addPerson(person,book_id)
+        if addPerson(person,book_id)
+            redirect("/error")
+        end
     end
     redirect("/home")
 end
@@ -170,7 +174,9 @@ post('/books') do
     menhirs = params[:stone]
     artist = params[:artist]
 
-    addbook(title, number, publiDate, posionsDrunk, piratShipSunk, boar, menhirs, artist)
+    if addbook(title, number, publiDate, posionsDrunk, piratShipSunk, boar, menhirs, artist)
+        redirect("/error")
+    end
     redirect("/home")
 end
 
@@ -203,7 +209,12 @@ post("/login") do
     username = params[:username]
     password = params[:password]
 
-    login(username,password)
+    tmp = login(username,password)
+    if tmp[0]
+        redirect("/error")
+    end
+    session[:id] = tmp[1]
+    session[:rool] = tmp[2]
     redirect to("/home")
 end
   
@@ -218,7 +229,10 @@ post("/users") do
     username = params[:username]
     password = params[:password]
     password_confirm = params[:password_connfirm]
-    register(username,password,password_confirm)
+    if register(username,password,password_confirm)
+        redirect("/error")
+    end
+    redirect("/home")
 end
 
 # Diplays all users white rool reader
@@ -264,6 +278,7 @@ end
 # @param [Integer] id, user id
 #
 # @see Model#rolllrvel
+# @see Model#moderate
 post('/rool/:id/update') do
     if rolllrvel() < 3
         redirect("/home")
@@ -271,6 +286,7 @@ post('/rool/:id/update') do
     id = params[:id]
     rool = params[:rool]   
     moderate(id,rool)
+    redirect("/home")
 end
 
 # Diplays a list of users and a form to edit ther rool or delete them
@@ -323,7 +339,10 @@ post("/book/:id/edit") do
     artist = params[:artist]
     id = params[:id]
 
-    editbook(title, number, publiDate, posionsDrunk, piratShipSunk, boar, menhirs, artist, id)
+    if editbook(title, number, publiDate, posionsDrunk, piratShipSunk, boar, menhirs, artist, id)
+        redirect("/error")
+    end
+    redirect("/home")
 end
 
 # Diplays info from given book
@@ -369,7 +388,9 @@ post("/pepol_in_book/:id/edit") do
 
     
     pepolAdd.each do |person|
-        addPerson(person,book_id)
+        if addPerson(person,book_id)
+            redirect("/home")
+        end
     end
     pepolRemove.each do |person|
         removePerson(person,book_id)
@@ -401,7 +422,9 @@ post("/book_in_placese/:id/edit") do
 
     
     placeAdd.each do |place|
-        addPlace(place,book_id)
+        if addPlace(place,book_id)
+            redirect("/error")
+        end
     end
     placeRemove.each do |place|
         removePlace(place,book_id)
